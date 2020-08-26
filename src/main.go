@@ -36,7 +36,7 @@ func datascrape(URL string) {
 // Main function
 func main() {
 	// Commandline arguments
-	tagPtr := flag.String("tag", "robot", "Any Danbooru tag")
+	tagPtr := flag.String("tags", "robot", "Any Danbooru tag")
 	pagesPtr := flag.String("pages", "1", "Number of pages to go through")
 	flag.Parse()
 
