@@ -28,6 +28,6 @@ func query(ImageURL string) {
 	// Input URLs into database
 	db.Create(&Image{
 		URL:        ImageURL,
-		Downloaded: true,
+		Downloaded: false,
 	})
 }
