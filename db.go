@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"os"
 	"os/user"
 	"path/filepath"
 
@@ -15,12 +17,29 @@ type Image struct {
 	Downloaded bool
 }
 
+// File exists function
+func fileExists(file string) bool {
+	info, err := os.Stat(file)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return !info.IsDir()
+}
+
 func query(ImageURL string) {
-	// Create Database
+	// Database path
 	usr, _ := user.Current()
 	path := usr.HomeDir
 	filename := "downbooru.db"
 	databasepath := filepath.Join(path, filename)
+	// Test if database file exists, if not create
+	if fileExists(databasepath) {
+		fmt.Println("Database exists")
+	} else {
+		fmt.Println("Database does not exist, creating:")
+		dbf, _ := os.Create(databasepath)
+		defer dbf.Close()
+	}
 	// Configure connection to database
 	db, _ := gorm.Open(sqlite.Open(databasepath), &gorm.Config{})
 	// Create tables

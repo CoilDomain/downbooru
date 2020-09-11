@@ -57,6 +57,7 @@ func main() {
 			tagURL := "&tags=" + tag
 			fullURL := baseURL + pageURL + tagURL
 			datascrape(fullURL)
+			query(fullURL)
 		}
 	}
 }
