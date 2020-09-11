@@ -13,7 +13,7 @@ import (
 // Image database structure
 type Image struct {
 	gorm.Model
-	URL        string
+	URL        string `gorm:"primaryKey"`
 	Downloaded bool
 }
 
@@ -26,7 +26,7 @@ func fileExists(file string) bool {
 	return !info.IsDir()
 }
 
-func query(ImageURL string) {
+func dbinsert(ImageURL string) {
 	// Database path
 	usr, _ := user.Current()
 	path := usr.HomeDir
@@ -36,8 +36,8 @@ func query(ImageURL string) {
 	if fileExists(databasepath) {
 	} else {
 		fmt.Println("Database does not exist, creating:")
-		dbf, _ := os.Create(databasepath)
-		defer dbf.Close()
+		dbfile, _ := os.Create(databasepath)
+		defer dbfile.Close()
 		fmt.Println("Done")
 	}
 	// Configure connection to database
@@ -45,7 +45,7 @@ func query(ImageURL string) {
 	// Create tables
 	db.AutoMigrate(&Image{})
 	// Input URLs into database
-	db.Create(&Image{
+	db.Select("URL", "Downloaded").Create(&Image{
 		URL:        ImageURL,
 		Downloaded: false,
 	})
