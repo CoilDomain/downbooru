@@ -8,11 +8,11 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 // Image database structure
 type Image struct {
-	gorm.Model
 	URL        string `gorm:"primaryKey"`
 	Downloaded bool
 }
@@ -45,7 +45,7 @@ func dbinsert(ImageURL string) {
 	// Create tables
 	db.AutoMigrate(&Image{})
 	// Input URLs into database
-	db.Select("URL", "Downloaded").Create(&Image{
+	db.Clauses(clause.OnConflict{DoNothing: true}).Create(&Image{
 		URL:        ImageURL,
 		Downloaded: false,
 	})
