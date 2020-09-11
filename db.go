@@ -26,12 +26,18 @@ func fileExists(file string) bool {
 	return !info.IsDir()
 }
 
+// Database path
+var usr, _ = user.Current()
+var path = usr.HomeDir
+var filename = "downbooru.db"
+var databasepath = filepath.Join(path, filename)
+
+// Configure connection to database
+var db, _ = gorm.Open(sqlite.Open(databasepath), &gorm.Config{})
+
 func dbinsert(ImageURL string) {
-	// Database path
-	usr, _ := user.Current()
-	path := usr.HomeDir
-	filename := "downbooru.db"
-	databasepath := filepath.Join(path, filename)
+	// Create tables
+	db.AutoMigrate(&Image{})
 	// Test if database file exists, if not create
 	if fileExists(databasepath) {
 	} else {
@@ -40,10 +46,6 @@ func dbinsert(ImageURL string) {
 		defer dbfile.Close()
 		fmt.Println("Done")
 	}
-	// Configure connection to database
-	db, _ := gorm.Open(sqlite.Open(databasepath), &gorm.Config{})
-	// Create tables
-	db.AutoMigrate(&Image{})
 	// Input URLs into database
 	db.Clauses(clause.OnConflict{DoNothing: true}).Create(&Image{
 		URL:        ImageURL,
