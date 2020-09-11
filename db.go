@@ -34,11 +34,11 @@ func query(ImageURL string) {
 	databasepath := filepath.Join(path, filename)
 	// Test if database file exists, if not create
 	if fileExists(databasepath) {
-		fmt.Println("Database exists")
 	} else {
 		fmt.Println("Database does not exist, creating:")
 		dbf, _ := os.Create(databasepath)
 		defer dbf.Close()
+		fmt.Println("Done")
 	}
 	// Configure connection to database
 	db, _ := gorm.Open(sqlite.Open(databasepath), &gorm.Config{})

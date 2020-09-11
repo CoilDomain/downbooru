@@ -12,7 +12,8 @@ import (
 )
 
 // Create function to grab content of page and image URLs
-func datascrape(URL string) {
+//              Input ;)     Output ;)
+func datascrape(URL string) (parsedURL string) {
 	// Getting the content of the page
 	res, err := http.Get(URL)
 	if err != nil {
@@ -30,7 +31,10 @@ func datascrape(URL string) {
 	doc.Find(".post-preview").Each(func(i int, s *goquery.Selection) {
 		URL, _ := s.Attr("data-file-url")
 		fmt.Printf("%s\n", URL)
+		// Define output from results
+		parsedURL = URL
 	})
+	return
 }
 
 // Main function
@@ -56,8 +60,14 @@ func main() {
 			pageURL := "page=" + pns
 			tagURL := "&tags=" + tag
 			fullURL := baseURL + pageURL + tagURL
-			datascrape(fullURL)
-			query(fullURL)
+			// Create image list from scraping
+			imagelist := datascrape(fullURL)
+			list := strings.Split(imagelist, "\n")
+			// Input images into database
+			for image := range list {
+				//query(image)
+				fmt.Println(image)
+			}
 		}
 	}
 }
