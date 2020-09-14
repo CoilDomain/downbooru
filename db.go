@@ -53,7 +53,11 @@ var db, _ = gorm.Open(sqlite.Open(databasepath), &gorm.Config{
 // Query table for undownloaded images
 func dbquery() {
 	var image []Image
-	db.Table("images").Where("downloaded = ?", false).Find(&image)
+	db.Where(&Image{Downloaded: false}).Find(&image)
+	length := len(image)
+	for n := 1; n < length; n++ {
+		fmt.Println(image[n].URL)
+	}
 }
 
 // Insert scraped images into database
