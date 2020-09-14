@@ -2,13 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"os/user"
 	"path/filepath"
+	"time"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"gorm.io/gorm/logger"
 )
 
 // Image database structure
@@ -26,6 +29,16 @@ func fileExists(file string) bool {
 	return !info.IsDir()
 }
 
+// Add logging for troubleshooting
+var newLogger = logger.New(
+	log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
+	logger.Config{
+		SlowThreshold: time.Second,   // Slow SQL threshold
+		LogLevel:      logger.Silent, // Log level
+		Colorful:      false,         // Disable color
+	},
+)
+
 // Database path
 var usr, _ = user.Current()
 var path = usr.HomeDir
@@ -33,8 +46,17 @@ var filename = "downbooru.db"
 var databasepath = filepath.Join(path, filename)
 
 // Configure connection to database
-var db, _ = gorm.Open(sqlite.Open(databasepath), &gorm.Config{})
+var db, _ = gorm.Open(sqlite.Open(databasepath), &gorm.Config{
+	Logger: logger.Default.LogMode(logger.Silent),
+})
 
+// Query table for undownloaded images
+func dbquery() {
+	var image []Image
+	db.Table("images").Where("downloaded = ?", false).Find(&image)
+}
+
+// Insert scraped images into database
 func dbinsert(ImageURL string) {
 	// Create tables
 	db.AutoMigrate(&Image{})
