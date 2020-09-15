@@ -55,7 +55,7 @@ func dbquery() {
 	var image []Image
 	db.Where(&Image{Downloaded: false}).Find(&image)
 	length := len(image)
-	for n := 1; n < length; n++ {
+	for n := 0; n < length; n++ {
 		fmt.Println(image[n].URL)
 	}
 }
