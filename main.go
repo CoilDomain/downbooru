@@ -56,7 +56,7 @@ func getimg(URL string) {
 // Poll database and download images, possibly limit first 10, mark complete and reiterate for faster downloads
 func poll() {
 	for row := range dbquery() {
-		getimg(string(row))
+		getimg(row)
 	}
 }
 
