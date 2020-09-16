@@ -2,10 +2,15 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/cavaliercoder/grab"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -34,6 +39,27 @@ func datascrape(URL string) {
 	})
 }
 
+// Set download location
+var foldername = "Downloads"
+var downloadfolder = filepath.Join(path, foldername)
+
+// Download inage function, need to make semi-async within limits
+func getimg(URL string) {
+	resp, err := grab.Get(downloadfolder, URL)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error downloading ", URL, err)
+		os.Exit(1)
+	}
+	fmt.Println("Downloading: ", resp.Filename)
+}
+
+// Poll database and download images, possibly limit first 10, mark complete and reiterate for faster downloads
+func poll() {
+	for row := range dbquery() {
+		getimg(string(row))
+	}
+}
+
 // Main function
 func main() {
 	// Commandline arguments
@@ -60,4 +86,5 @@ func main() {
 			datascrape(fullURL)
 		}
 	}
+	poll()
 }
