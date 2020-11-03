@@ -15,6 +15,7 @@ import (
 	"github.com/PuerkitoBio/goquery"
 )
 
+// Try to make it pretty using pterm eventually
 // Create function to grab content of page and image URLs
 //              Input ;)     Output ;)
 func datascrape(URL string) {
